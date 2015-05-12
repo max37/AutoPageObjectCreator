@@ -22,5 +22,8 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/Maxim_Mytaryov/Dropbox/AutoPageObjectCreator/project/autopocreator/lib/jxbrowser-5.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Maxim_Mytaryov/Dropbox/AutoPageObjectCreator/project/autopocreator/lib/jxbrowser-win-5.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Maxim_Mytaryov/Dropbox/AutoPageObjectCreator/project/autopocreator/lib/license.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
