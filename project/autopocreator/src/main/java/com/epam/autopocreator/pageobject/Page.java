@@ -1,9 +1,11 @@
 package com.epam.autopocreator.pageobject;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 
 import com.epam.autopocreator.navigation.AddressOperations;
@@ -11,13 +13,13 @@ import com.epam.autopocreator.settings.SavePath;
 
 public class Page {
 	private String name;
-	private final String BLANK_FILE = "package \n"
-			+ "import ru.yandex.qatools.htmlelements.element.*\n"
-			+ "public class %sPage {\n"
+	private final String BLANK_FILE = "package com.autopocreator.pageobject;\r\n"
+			+ "import ru.yandex.qatools.htmlelements.element.*;\r\n"
+			+ "public class %sPage {\r\n\r\n"
 			+ "}";
 	
 	public Page(String URL) {
-		AddressOperations.getPageName(URL);
+		this.name = AddressOperations.getPageName(URL);
 	}
 	
 	public String getName() {
@@ -29,44 +31,73 @@ public class Page {
 	}
 	
 	public boolean isExists() {
-		return new File(SavePath.getSavePath().getPath()).exists();
+		System.out.println((new File(SavePath.getSavePath().getPath() + "\\" + getName() + ".java")).exists());
+		System.out.println(SavePath.getSavePath().getPath() + "\\" + getName() + ".java");
+		return (new File(SavePath.getSavePath().getPath() + "\\" + getName() + ".java")).exists();
 	}
 	
 	public void addWebElement(ChosenNode node) {
 		if (!this.isExists()) {
+			System.out.println("Создаём");
 			create();
 		}
 		writeElement(node);
 	}
 	
 	private void create() {
-		File file = new File(SavePath.getSavePath().getPath());
-		FileWriter fw;
 		try {
-			fw = new FileWriter(file);
-			fw.write(String.format(BLANK_FILE, name));
-			fw.close();
+			OutputStream os = new FileOutputStream(SavePath.getSavePath().getPath() + "\\" + getName() + ".java");
+			os.write(String.format(BLANK_FILE, name).getBytes());
+			os.close();
+		} catch (FileNotFoundException e1) {
+			System.out.println("File not found: " + SavePath.getSavePath().getPath() + "\\" + getName() + ".java");
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Can't read file: " + SavePath.getSavePath().getPath() + "\\" + getName() + ".java");
 		}
-		
 	}
 	
 	private void writeElement(ChosenNode node) {
-		File file = new File(SavePath.getSavePath().getPath());
-		try {
-			RandomAccessFile out = new RandomAccessFile(file, "rw");
+		if (!checkSameElement(node)) {
 			try {
-				out.seek(out.length() - 1);
-				out.writeUTF(WebElementOperations.getFullDescription(node));
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				RandomAccessFile out = new RandomAccessFile(SavePath.getSavePath().getPath() + "\\" + getName() + ".java", "rw");
+				try {
+					System.out.println(out.length());
+					out.seek(out.length() - 1);
+					out.write((node.getFullDescription() + "}").getBytes());
+					out.close();
+				} catch (IOException e) {
+					System.out.println("Can't read file: " + SavePath.getSavePath().getPath() + "\\" + getName() + ".java");
+				}
+			} catch (FileNotFoundException e) {
+				System.out.println("File not found: " + SavePath.getSavePath().getPath() + "\\" + getName() + ".java");
 			}
-			
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} else {
+			System.out.println("Element already written");
 		}
+	}
+	
+	public boolean checkSameElement(ChosenNode node) {
+		File file = new File(SavePath.getSavePath().getPath() + "\\" + getName() + ".java");
+		boolean found = false;
+		try {
+			found = searchWordInFile(file, node.getLastName());
+		} catch (IOException e) {
+			System.out.println("Can't read file: " + SavePath.getSavePath().getPath() + "\\" + getName() + ".java");
+		}
+		return found;
+	}
+	
+	private boolean searchWordInFile(File file, String searchWord) throws IOException {
+	        FileInputStream fis = new FileInputStream(file); 
+	        byte[] content = new byte[fis.available()];
+	        fis.read(content);
+	        fis.close();
+	        String[] lines = new String(content, "Cp1251").split("\n"); // кодировку указать нужную
+	        for (String line : lines) {
+	            if (line.contains(searchWord)) {
+	                return true;
+	            }
+	        }
+	        return false;
 	}
 }

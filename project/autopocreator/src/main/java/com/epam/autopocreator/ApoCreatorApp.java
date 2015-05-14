@@ -16,9 +16,6 @@ import com.epam.autopocreator.pageobject.ChosenNode;
 import com.epam.autopocreator.pageobject.Page;
 import com.epam.autopocreator.settings.SavePath;
 import com.teamdev.jxbrowser.chromium.Browser;
-import com.teamdev.jxbrowser.chromium.dom.DOMDocument;
-import com.teamdev.jxbrowser.chromium.dom.DOMElement;
-import com.teamdev.jxbrowser.chromium.dom.DOMNode;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 
 public class ApoCreatorApp extends JFrame {
@@ -34,7 +31,6 @@ public class ApoCreatorApp extends JFrame {
 	private JFileChooser pathChooser;
 	private Browser browser;
 	private BrowserView browserView;
-	private DOMDocument document;
 	
 	final static Color ERROR_COLOR = Color.RED;
 	
@@ -49,20 +45,6 @@ public class ApoCreatorApp extends JFrame {
             	ChosenNode chosenNode = new ChosenNode(browser.getNodeAtPoint(e.getX(), e.getY()).getNode());
             	Page page = new Page(browser.getURL());
             	page.addWebElement(chosenNode);
-				
-				
-		        System.out.println(((DOMElement) nodeAtPoint).getAttribute("id"));
-		        System.out.println(nodeAtPoint.getNodeName());
-		        System.out.println(nodeAtPoint.getNodeType());
-		        //TODO get node (getNodeAtPoint)
-		        //TODO add node
-                System.out.println("e = " + e);
-            }
-        });
-
-        browserView.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
-                System.out.println("e = " + e);
             }
         });
         
@@ -84,6 +66,7 @@ public class ApoCreatorApp extends JFrame {
 		startButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				browser.loadURL(urlField.getText());
+				urlField.setText(browser.getURL());
 			}
 		});
 		
