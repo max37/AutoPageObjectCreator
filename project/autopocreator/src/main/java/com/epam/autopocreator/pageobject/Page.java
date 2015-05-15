@@ -36,12 +36,11 @@ public class Page {
 		return (new File(SavePath.getSavePath().getPath() + "\\" + getName() + ".java")).exists();
 	}
 	
-	public void addWebElement(ChosenNode node) {
+	public boolean addWebElement(ChosenNode node) {
 		if (!this.isExists()) {
-			System.out.println("Создаём");
 			create();
 		}
-		writeElement(node);
+		return writeElement(node);
 	}
 	
 	private void create() {
@@ -56,7 +55,7 @@ public class Page {
 		}
 	}
 	
-	private void writeElement(ChosenNode node) {
+	private boolean writeElement(ChosenNode node) {
 		if (!checkSameElement(node)) {
 			try {
 				RandomAccessFile out = new RandomAccessFile(SavePath.getSavePath().getPath() + "\\" + getName() + ".java", "rw");
@@ -65,6 +64,7 @@ public class Page {
 					out.seek(out.length() - 1);
 					out.write((node.getFullDescription() + "}").getBytes());
 					out.close();
+					return true;
 				} catch (IOException e) {
 					System.out.println("Can't read file: " + SavePath.getSavePath().getPath() + "\\" + getName() + ".java");
 				}
@@ -74,6 +74,7 @@ public class Page {
 		} else {
 			System.out.println("Element already written");
 		}
+		return false;
 	}
 	
 	public boolean checkSameElement(ChosenNode node) {

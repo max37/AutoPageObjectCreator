@@ -3,8 +3,6 @@ package com.epam.autopocreator;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -12,10 +10,12 @@ import java.io.IOException;
 
 import javax.swing.*;
 
+import com.epam.autopocreator.navigation.SingleBrowser;
 import com.epam.autopocreator.pageobject.ChosenNode;
 import com.epam.autopocreator.pageobject.Page;
 import com.epam.autopocreator.settings.SavePath;
-import com.teamdev.jxbrowser.chromium.Browser;
+import com.teamdev.jxbrowser.chromium.dom.DOMNodeAtPoint;
+import com.teamdev.jxbrowser.chromium.dom.internal.Node;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 
 public class ApoCreatorApp extends JFrame {
@@ -29,7 +29,6 @@ public class ApoCreatorApp extends JFrame {
 	private JLabel urlLabel;
 	private JButton changePathButton;
 	private JFileChooser pathChooser;
-	private Browser browser;
 	private BrowserView browserView;
 	
 	final static Color ERROR_COLOR = Color.RED;
@@ -41,9 +40,10 @@ public class ApoCreatorApp extends JFrame {
 		
 		browserView.addMouseListener(new MouseAdapter() {
 			@Override
-            public void mouseClicked(MouseEvent e) {
-            	ChosenNode chosenNode = new ChosenNode(browser.getNodeAtPoint(e.getX(), e.getY()).getNode());
-            	Page page = new Page(browser.getURL());
+            public void mousePressed(MouseEvent e) {
+				DOMNodeAtPoint node = SingleBrowser.getSingleBrowser().getBrowser().getNodeAtPoint(e.getX(), e.getY());
+            	ChosenNode chosenNode = new ChosenNode((Node) node.getNode());
+            	Page page = new Page(SingleBrowser.getSingleBrowser().getBrowser().getURL());
             	page.addWebElement(chosenNode);
             }
         });
@@ -65,8 +65,8 @@ public class ApoCreatorApp extends JFrame {
 		
 		startButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				browser.loadURL(urlField.getText());
-				urlField.setText(browser.getURL());
+				SingleBrowser.getSingleBrowser().getBrowser().loadURL(urlField.getText());
+				urlField.setText(SingleBrowser.getSingleBrowser().getBrowser().getURL());
 			}
 		});
 		
@@ -76,8 +76,7 @@ public class ApoCreatorApp extends JFrame {
 		setBounds(100, 100, 800, 600);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		browser = new Browser();
-		browserView = new BrowserView(browser);
+		browserView = new BrowserView(SingleBrowser.getSingleBrowser().getBrowser());
 		pathLabel = new JLabel();
 		pathField = new JTextField();
 		changePathButton = new JButton("...");
