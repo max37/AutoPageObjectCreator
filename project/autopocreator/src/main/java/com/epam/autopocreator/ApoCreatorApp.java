@@ -109,7 +109,7 @@ public class ApoCreatorApp extends JFrame {
 								.addComponent(pathField)
 								.addComponent(urlLabel)
 								.addComponent(urlField))
-						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
 								.addComponent(changePathButton)
 								.addComponent(startButton))))
 		);

@@ -31,8 +31,6 @@ public class Page {
 	}
 	
 	public boolean isExists() {
-		System.out.println((new File(SavePath.getSavePath().getPath() + "\\" + getName() + ".java")).exists());
-		System.out.println(SavePath.getSavePath().getPath() + "\\" + getName() + ".java");
 		return (new File(SavePath.getSavePath().getPath() + "\\" + getName() + ".java")).exists();
 	}
 	

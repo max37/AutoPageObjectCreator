@@ -8,7 +8,7 @@ public abstract class AddressOperations {
 		if (URL.lastIndexOf("/") >= URL.length() - 1) {
 			return "Main";
 		}
-		String endOfUrl = URL.substring(URL.lastIndexOf("/") + 1, URL.length() - 1);
+		String endOfUrl = URL.substring(URL.lastIndexOf("/") + 1, URL.length());
 		if (endOfUrl.indexOf("?") > -1) {
 			endOfUrl = endOfUrl.substring(0, endOfUrl.indexOf("?"));
 		}

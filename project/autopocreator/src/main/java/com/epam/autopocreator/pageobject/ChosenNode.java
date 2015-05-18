@@ -9,6 +9,7 @@ import org.jsoup.select.Elements;
 import com.epam.autopocreator.navigation.SingleBrowser;
 import com.teamdev.jxbrowser.chromium.dom.DOMElement;
 import com.teamdev.jxbrowser.chromium.dom.DOMNode;
+import com.teamdev.jxbrowser.chromium.dom.DOMNodeType;
 import com.teamdev.jxbrowser.chromium.dom.DOMTextAreaElement;
 import com.teamdev.jxbrowser.chromium.dom.internal.Node;
 
@@ -33,6 +34,28 @@ public class ChosenNode {
 	}
 	
 	public String getSelector() {
+		if (node instanceof DOMTextAreaElement)  {
+			String selector = ((DOMTextAreaElement) node).getAttribute("id");
+			if (!selector.isEmpty()) {
+				selectorType = SelectorType.ID;
+				return selector;
+			}
+			selector = ((DOMTextAreaElement) node).getAttribute("name");
+			if (!selector.isEmpty()) {
+				selectorType = SelectorType.NAME;
+				return selector;
+			}
+			selector = findCssSelector(node);
+			if (!selector.isEmpty()) {
+				selectorType = SelectorType.CSS;
+				return selector;
+			}
+			selector = findXpathSelector(node);
+			if (!selector.isEmpty()) {
+				selectorType = SelectorType.XPATH;
+				return selector;
+			}
+		}
 		if (node instanceof DOMElement) {
 			String selector = ((DOMElement) node).getAttribute("id");
 			if (!selector.isEmpty()) {
@@ -55,29 +78,7 @@ public class ChosenNode {
 				return selector;
 			}
 		}
-		if (node instanceof DOMTextAreaElement) {
-			String selector = ((DOMTextAreaElement) node).getAttribute("id");
-			if (!selector.isEmpty()) {
-				selectorType = SelectorType.ID;
-				return selector;
-			}
-			selector = ((DOMTextAreaElement) node).getAttribute("name");
-			if (!selector.isEmpty()) {
-				selectorType = SelectorType.NAME;
-				return selector;
-			}
-			selector = findCssSelector(node);
-			if (!selector.isEmpty()) {
-				selectorType = SelectorType.CSS;
-				return selector;
-			}
-			selector = findXpathSelector(node);
-			if (!selector.isEmpty()) {
-				selectorType = SelectorType.XPATH;
-				return selector;
-			}
-		}
-		System.err.println("CAN'T FIND SELECTOR");
+		System.out.println("CAN'T FIND SELECTOR");
 		selectorType = SelectorType.NONE;
 		return null;
 		
@@ -87,8 +88,6 @@ public class ChosenNode {
 		Map<String, String> attributes = ((DOMElement) node).getAttributes();
 		Document doc = Jsoup.parse(SingleBrowser.getSingleBrowser().getBrowser().getHTML());
 		for (String attribute : attributes.keySet()) {
-			System.out.println(attributes.toString());
-			System.out.println("Attribute: " + attribute + "; Value: " + attributes.get(attribute));
 			Elements elementsFound = doc.getElementsByAttributeValue(attribute, attributes.get(attribute));
 			if (elementsFound.size() == 1) {
 				return elementsFound.get(0).cssSelector();
@@ -127,42 +126,6 @@ public class ChosenNode {
 	}
 	
 	public String getHTMLElementType() {
-		if (node instanceof DOMElement) {
-			if (((DOMElement) node).getNodeName().equalsIgnoreCase("a")) {
-				return "Link";
-			}
-			if (((DOMElement) node).getNodeName().equalsIgnoreCase("img")) {
-				return "Image";
-			}
-			if (((DOMElement) node).getNodeName().equalsIgnoreCase("input")) {
-				if (((DOMElement) node).getAttribute("type").equalsIgnoreCase("checkbox")) {
-					return "CheckBox";
-				}
-				if (((DOMElement) node).getAttribute("type").equalsIgnoreCase("radio")) {
-					return "Radio";
-				}
-				if (((DOMElement) node).getAttribute("type").equalsIgnoreCase("file")) {
-					return "FileInput";
-				}
-				if (((DOMElement) node).getAttribute("type").equals("submit") ||
-						((DOMElement) node).getAttribute("type").equalsIgnoreCase("reset")) {
-					return "Button";
-				}
-				return "TextInput";
-			}
-			if (((DOMElement) node).getNodeName().equalsIgnoreCase("select")) {
-				return "Select";
-			}
-			if (((DOMElement) node).getNodeName().equalsIgnoreCase("form")) {
-				return "Form";
-			}
-			if (((DOMElement) node).getNodeName().equalsIgnoreCase("table")) {
-				return "Table";
-			}
-			if (((DOMElement) node).getNodeName().equalsIgnoreCase("button")) {
-				return "Button";
-			}
-		}
 		if (node instanceof DOMTextAreaElement) {
 			if (((DOMTextAreaElement) node).getNodeName().equalsIgnoreCase("a")) {
 				return "Link";
@@ -199,6 +162,42 @@ public class ChosenNode {
 				return "Button";
 			}
 		}
+		if (node instanceof DOMElement) {
+			if (((DOMElement) node).getNodeName().equalsIgnoreCase("a")) {
+				return "Link";
+			}
+			if (((DOMElement) node).getNodeName().equalsIgnoreCase("img")) {
+				return "Image";
+			}
+			if (((DOMElement) node).getNodeName().equalsIgnoreCase("input")) {
+				if (((DOMElement) node).getAttribute("type").equalsIgnoreCase("checkbox")) {
+					return "CheckBox";
+				}
+				if (((DOMElement) node).getAttribute("type").equalsIgnoreCase("radio")) {
+					return "Radio";
+				}
+				if (((DOMElement) node).getAttribute("type").equalsIgnoreCase("file")) {
+					return "FileInput";
+				}
+				if (((DOMElement) node).getAttribute("type").equals("submit") ||
+						((DOMElement) node).getAttribute("type").equalsIgnoreCase("reset")) {
+					return "Button";
+				}
+				return "TextInput";
+			}
+			if (((DOMElement) node).getNodeName().equalsIgnoreCase("select")) {
+				return "Select";
+			}
+			if (((DOMElement) node).getNodeName().equalsIgnoreCase("form")) {
+				return "Form";
+			}
+			if (((DOMElement) node).getNodeName().equalsIgnoreCase("table")) {
+				return "Table";
+			}
+			if (((DOMElement) node).getNodeName().equalsIgnoreCase("button")) {
+				return "Button";
+			}
+		}
 		return "HTMLElement";
 	}
 	
@@ -227,8 +226,7 @@ public class ChosenNode {
 		sb.append(getSelectorType());
 		sb.append(" = \"");
 		sb.append(getSelectorValue());
-		sb.append("\")\r\n");
-		sb.append("public ");
+		sb.append("\")\r\npublic ");
 		sb.append(getHTMLTypeValue());
 		sb.append(" ");
 		sb.append(getNewName());
@@ -239,6 +237,11 @@ public class ChosenNode {
 			sb.append("Click() {\r\n");
 			sb.append(getLastName());
 			sb.append(".click();\r\n}\r\n\r\n");
+			sb.append("public boolean ");
+			sb.append(getLastName());
+			sb.append("IsDisplayed() {\r\nreturn ");
+			sb.append(getLastName());
+			sb.append(".isDisplayed();\r\n}\r\n\r\n");
 		}
 		if (getHTMLTypeValue().equals("TextInput")) {
 			sb.append("public void set");
@@ -249,6 +252,7 @@ public class ChosenNode {
 			sb.append(getLastName());
 			sb.append(".sendKeys(newValue);\r\n}\r\n\r\n");
 		}
+		
 		return sb.toString();
 	}
 	
