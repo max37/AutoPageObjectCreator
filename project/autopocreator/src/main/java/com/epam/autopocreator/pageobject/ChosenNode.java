@@ -4,12 +4,18 @@ import java.util.Map;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
 import com.epam.autopocreator.navigation.SingleBrowser;
 import com.teamdev.jxbrowser.chromium.dom.DOMElement;
+import com.teamdev.jxbrowser.chromium.dom.DOMFormControlElement;
+import com.teamdev.jxbrowser.chromium.dom.DOMFormElement;
+import com.teamdev.jxbrowser.chromium.dom.DOMInputElement;
 import com.teamdev.jxbrowser.chromium.dom.DOMNode;
 import com.teamdev.jxbrowser.chromium.dom.DOMNodeType;
+import com.teamdev.jxbrowser.chromium.dom.DOMOptionElement;
+import com.teamdev.jxbrowser.chromium.dom.DOMSelectElement;
 import com.teamdev.jxbrowser.chromium.dom.DOMTextAreaElement;
 import com.teamdev.jxbrowser.chromium.dom.internal.Node;
 
@@ -34,27 +40,8 @@ public class ChosenNode {
 	}
 	
 	public String getSelector() {
-		if (node instanceof DOMTextAreaElement)  {
-			String selector = ((DOMTextAreaElement) node).getAttribute("id");
-			if (!selector.isEmpty()) {
-				selectorType = SelectorType.ID;
-				return selector;
-			}
-			selector = ((DOMTextAreaElement) node).getAttribute("name");
-			if (!selector.isEmpty()) {
-				selectorType = SelectorType.NAME;
-				return selector;
-			}
-			selector = findCssSelector(node);
-			if (!selector.isEmpty()) {
-				selectorType = SelectorType.CSS;
-				return selector;
-			}
-			selector = findXpathSelector(node);
-			if (!selector.isEmpty()) {
-				selectorType = SelectorType.XPATH;
-				return selector;
-			}
+		if (node.getNodeType().equals(DOMNodeType.TextNode)) {
+			node = node.getParent();
 		}
 		if (node instanceof DOMElement) {
 			String selector = ((DOMElement) node).getAttribute("id");
@@ -126,42 +113,6 @@ public class ChosenNode {
 	}
 	
 	public String getHTMLElementType() {
-		if (node instanceof DOMTextAreaElement) {
-			if (((DOMTextAreaElement) node).getNodeName().equalsIgnoreCase("a")) {
-				return "Link";
-			}
-			if (((DOMTextAreaElement) node).getNodeName().equalsIgnoreCase("img")) {
-				return "Image";
-			}
-			if (((DOMTextAreaElement) node).getNodeName().equalsIgnoreCase("input")) {
-				if (((DOMTextAreaElement) node).getAttribute("type").equalsIgnoreCase("checkbox")) {
-					return "CheckBox";
-				}
-				if (((DOMTextAreaElement) node).getAttribute("type").equalsIgnoreCase("radio")) {
-					return "Radio";
-				}
-				if (((DOMTextAreaElement) node).getAttribute("type").equalsIgnoreCase("file")) {
-					return "FileInput";
-				}
-				if (((DOMTextAreaElement) node).getAttribute("type").equals("submit") ||
-						((DOMTextAreaElement) node).getAttribute("type").equalsIgnoreCase("reset")) {
-					return "Button";
-				}
-				return "TextInput";
-			}
-			if (((DOMTextAreaElement) node).getNodeName().equalsIgnoreCase("select")) {
-				return "Select";
-			}
-			if (((DOMTextAreaElement) node).getNodeName().equalsIgnoreCase("form")) {
-				return "Form";
-			}
-			if (((DOMTextAreaElement) node).getNodeName().equalsIgnoreCase("table")) {
-				return "Table";
-			}
-			if (((DOMTextAreaElement) node).getNodeName().equalsIgnoreCase("button")) {
-				return "Button";
-			}
-		}
 		if (node instanceof DOMElement) {
 			if (((DOMElement) node).getNodeName().equalsIgnoreCase("a")) {
 				return "Link";

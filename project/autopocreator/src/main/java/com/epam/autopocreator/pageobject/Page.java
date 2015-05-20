@@ -15,6 +15,7 @@ public class Page {
 	private String name;
 	private final String BLANK_FILE = "package com.autopocreator.pageobject;\r\n"
 			+ "import ru.yandex.qatools.htmlelements.element.*;\r\n"
+			+ "import org.openqa.selenium.support.FindBy;\r\n"
 			+ "public class %sPage {\r\n\r\n"
 			+ "}";
 	
