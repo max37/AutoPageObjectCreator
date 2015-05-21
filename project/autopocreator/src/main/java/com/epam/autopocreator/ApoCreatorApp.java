@@ -1,6 +1,5 @@
 package com.epam.autopocreator;
 
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -31,9 +30,6 @@ public class ApoCreatorApp extends JFrame {
 	private JFileChooser pathChooser;
 	private BrowserView browserView;
 	
-	final static Color ERROR_COLOR = Color.RED;
-	
-	
 	public ApoCreatorApp() {
 		super("Auto Page Object Creator");
 		initComponents();
@@ -44,10 +40,15 @@ public class ApoCreatorApp extends JFrame {
 				DOMNodeAtPoint node = SingleBrowser.getSingleBrowser().getBrowser().getNodeAtPoint(e.getX(), e.getY());
             	ChosenNode chosenNode = new ChosenNode((Node) node.getNode());
             	Page page = new Page(SingleBrowser.getSingleBrowser().getBrowser().getURL());
-            	page.addWebElement(chosenNode);
+            	page.addWebElement(chosenNode);	
+            }
+			
+			@Override
+            public void mouseReleased(MouseEvent e) {
+				urlField.setText(SingleBrowser.getSingleBrowser().getBrowser().getURL());
             }
         });
-        
+		
 		//обработчики кнопок
 		
 		changePathButton.addActionListener(new ActionListener() {

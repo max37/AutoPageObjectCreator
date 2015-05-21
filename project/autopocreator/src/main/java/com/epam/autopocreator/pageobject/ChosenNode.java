@@ -24,21 +24,21 @@ public class ChosenNode {
 	private String selector;
 	private String htmlType;
 	private SelectorType selectorType = SelectorType.NONE;
-	
+
 	public ChosenNode(Node node) {
 		this.node = node;
 		this.selector = getSelector();
 		this.htmlType = getHTMLElementType();
 	}
-	
+
 	public String getSelectorValue() {
 		return selector;
 	}
-	
+
 	public String getHTMLTypeValue() {
 		return htmlType;
 	}
-	
+
 	public String getSelector() {
 		if (node.getNodeType().equals(DOMNodeType.TextNode)) {
 			node = node.getParent();
@@ -68,14 +68,16 @@ public class ChosenNode {
 		System.out.println("CAN'T FIND SELECTOR");
 		selectorType = SelectorType.NONE;
 		return null;
-		
+
 	}
-	
+
 	private String findCssSelector(DOMNode node) {
 		Map<String, String> attributes = ((DOMElement) node).getAttributes();
-		Document doc = Jsoup.parse(SingleBrowser.getSingleBrowser().getBrowser().getHTML());
+		Document doc = Jsoup.parse(SingleBrowser.getSingleBrowser()
+				.getBrowser().getHTML());
 		for (String attribute : attributes.keySet()) {
-			Elements elementsFound = doc.getElementsByAttributeValue(attribute, attributes.get(attribute));
+			Elements elementsFound = doc.getElementsByAttributeValue(attribute,
+					attributes.get(attribute));
 			if (elementsFound.size() == 1) {
 				return elementsFound.get(0).cssSelector();
 			}
@@ -86,32 +88,37 @@ public class ChosenNode {
 	public String findXpathSelector(DOMNode node) {
 		return findXpathSelector(node, "");
 	}
-	
+
 	public String findXpathSelector(DOMNode node, String xpath) {
-    if (node == null) {
-        return "";
-    }
-    String elementName = "";
-    if (node instanceof DOMElement) {
-        elementName = ((DOMElement) node).getNodeName();
-    }
-    DOMNode parent = node.getParent();
-    if (parent == null) {
-        return xpath;
-    }
-    return findXpathSelector(parent, "/" + elementName + xpath);
-}
-	
+		if (node == null) {
+			return "";
+		}
+		String elementName = "";
+		if (node instanceof DOMElement) {
+			elementName = ((DOMElement) node).getNodeName();
+		}
+		DOMNode parent = node.getParent();
+		if (parent == null) {
+			return xpath;
+		}
+		return findXpathSelector(parent, "/" + elementName + xpath);
+	}
+
 	public String getSelectorType() {
 		switch (selectorType) {
-		case ID: return "id";
-		case NAME: return "name";
-		case CSS: return "css";
-		case XPATH: return "xpath";
-		default: return "error";
+		case ID:
+			return "id";
+		case NAME:
+			return "name";
+		case CSS:
+			return "css";
+		case XPATH:
+			return "xpath";
+		default:
+			return "error";
 		}
 	}
-	
+
 	public String getHTMLElementType() {
 		if (node instanceof DOMElement) {
 			if (((DOMElement) node).getNodeName().equalsIgnoreCase("a")) {
@@ -121,17 +128,21 @@ public class ChosenNode {
 				return "Image";
 			}
 			if (((DOMElement) node).getNodeName().equalsIgnoreCase("input")) {
-				if (((DOMElement) node).getAttribute("type").equalsIgnoreCase("checkbox")) {
+				if (((DOMElement) node).getAttribute("type").equalsIgnoreCase(
+						"checkbox")) {
 					return "CheckBox";
 				}
-				if (((DOMElement) node).getAttribute("type").equalsIgnoreCase("radio")) {
+				if (((DOMElement) node).getAttribute("type").equalsIgnoreCase(
+						"radio")) {
 					return "Radio";
 				}
-				if (((DOMElement) node).getAttribute("type").equalsIgnoreCase("file")) {
+				if (((DOMElement) node).getAttribute("type").equalsIgnoreCase(
+						"file")) {
 					return "FileInput";
 				}
-				if (((DOMElement) node).getAttribute("type").equals("submit") ||
-						((DOMElement) node).getAttribute("type").equalsIgnoreCase("reset")) {
+				if (((DOMElement) node).getAttribute("type").equals("submit")
+						|| ((DOMElement) node).getAttribute("type")
+								.equalsIgnoreCase("reset")) {
 					return "Button";
 				}
 				return "TextInput";
@@ -151,26 +162,28 @@ public class ChosenNode {
 		}
 		return "HTMLElement";
 	}
-	
+
 	public String getNewName() {
 		if (getSelectorType().equals("id") || getSelectorType().equals("name")) {
 			return getSelectorValue() + getHTMLTypeValue();
 		}
-		return node.getNodeName() + getHTMLElementType() + Counter.getCounter().incNumber();
+		return node.getNodeName() + getHTMLElementType()
+				+ Counter.getCounter().incNumber();
 	}
-	
+
 	public String getLastName() {
 		String selector = getSelectorType();
 		if (selector.equals("id") || selector.equals("name")) {
 			return getSelectorValue() + getHTMLTypeValue();
 		}
-		return node.getNodeName() + getHTMLElementType() + Counter.getCounter().getNumber();
+		return node.getNodeName() + getHTMLElementType()
+				+ Counter.getCounter().getNumber();
 	}
-	
+
 	public DOMNode getNode() {
 		return node;
 	}
-	
+
 	public String getFullDescription() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("@FindBy(");
@@ -203,8 +216,8 @@ public class ChosenNode {
 			sb.append(getLastName());
 			sb.append(".sendKeys(newValue);\r\n}\r\n\r\n");
 		}
-		
+
 		return sb.toString();
 	}
-	
+
 }
