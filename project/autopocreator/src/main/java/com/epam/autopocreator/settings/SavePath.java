@@ -2,7 +2,11 @@ package com.epam.autopocreator.settings;
 
 import java.io.File;
 import java.io.IOException;
-
+/**
+ * Одиночка для каталога сохранения результатов
+ * @author Maxim_Mytaryov
+ *
+ */
 public class SavePath {
 	private String path;
 	public static SavePath INSTANCE;

@@ -1,7 +1,11 @@
 package com.epam.autopocreator.navigation;
 
 public abstract class AddressOperations {
-	
+	/**
+	 * Вычисляет имя Page Object по URL страницы
+	 * @param URL
+	 * @return
+	 */
 	public static String getPageName(String URL) {
 		System.out.println(URL.lastIndexOf("/"));
 		System.out.println(URL.length());

@@ -4,19 +4,13 @@ import java.util.Map;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
 import com.epam.autopocreator.navigation.SingleBrowser;
+// Заменить на аналоги из Swing
 import com.teamdev.jxbrowser.chromium.dom.DOMElement;
-import com.teamdev.jxbrowser.chromium.dom.DOMFormControlElement;
-import com.teamdev.jxbrowser.chromium.dom.DOMFormElement;
-import com.teamdev.jxbrowser.chromium.dom.DOMInputElement;
 import com.teamdev.jxbrowser.chromium.dom.DOMNode;
 import com.teamdev.jxbrowser.chromium.dom.DOMNodeType;
-import com.teamdev.jxbrowser.chromium.dom.DOMOptionElement;
-import com.teamdev.jxbrowser.chromium.dom.DOMSelectElement;
-import com.teamdev.jxbrowser.chromium.dom.DOMTextAreaElement;
 import com.teamdev.jxbrowser.chromium.dom.internal.Node;
 
 public class ChosenNode {
@@ -39,6 +33,10 @@ public class ChosenNode {
 		return htmlType;
 	}
 
+	/**
+	 * Получает селектор созданной ноды
+	 * @return
+	 */
 	public String getSelector() {
 		if (node.getNodeType().equals(DOMNodeType.TextNode)) {
 			node = node.getParent();
@@ -71,6 +69,11 @@ public class ChosenNode {
 
 	}
 
+	/**
+	 * Вычисляет CSS селектор. Для этого используется парсинг к документу Jsoup
+	 * @param node
+	 * @return
+	 */
 	private String findCssSelector(DOMNode node) {
 		Map<String, String> attributes = ((DOMElement) node).getAttributes();
 		Document doc = Jsoup.parse(SingleBrowser.getSingleBrowser()
@@ -85,10 +88,21 @@ public class ChosenNode {
 		return "";
 	}
 
+	/**
+	 * Получение XPATH селектора. Метод по-умолчанию, для входа
+	 * @param node
+	 * @return
+	 */
 	public String findXpathSelector(DOMNode node) {
 		return findXpathSelector(node, "");
 	}
 
+	/**
+	 * Рекурсивный метод получения XPATH селектора
+	 * @param node
+	 * @param xpath
+	 * @return
+	 */
 	public String findXpathSelector(DOMNode node, String xpath) {
 		if (node == null) {
 			return "";
@@ -104,6 +118,10 @@ public class ChosenNode {
 		return findXpathSelector(parent, "/" + elementName + xpath);
 	}
 
+	/**
+	 * Возвращает тип селектора. Селектор хранится в enum типе, но возвращается в строковом виде
+	 * @return
+	 */
 	public String getSelectorType() {
 		switch (selectorType) {
 		case ID:
@@ -119,6 +137,10 @@ public class ChosenNode {
 		}
 	}
 
+	/**
+	 * Возвращает строковое имя соответствующего HTMLElement, в зависимости от типа ноды
+	 * @return
+	 */
 	public String getHTMLElementType() {
 		if (node instanceof DOMElement) {
 			if (((DOMElement) node).getNodeName().equalsIgnoreCase("a")) {
@@ -163,6 +185,10 @@ public class ChosenNode {
 		return "HTMLElement";
 	}
 
+	/**
+	 * Возвращает имя для нового элемента (происходит инкремент номера в конце имени)
+	 * @return
+	 */
 	public String getNewName() {
 		if (getSelectorType().equals("id") || getSelectorType().equals("name")) {
 			return getSelectorValue() + getHTMLTypeValue();
@@ -171,6 +197,10 @@ public class ChosenNode {
 				+ Counter.getCounter().incNumber();
 	}
 
+	/**
+	 * Возвращает имя с последним номером (для избежания повторов)
+	 * @return
+	 */
 	public String getLastName() {
 		String selector = getSelectorType();
 		if (selector.equals("id") || selector.equals("name")) {
@@ -184,6 +214,10 @@ public class ChosenNode {
 		return node;
 	}
 
+	/**
+	 * Возвращает полное описание элемента в Page Object (вместе с соответствующими методами)
+	 * @return
+	 */
 	public String getFullDescription() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("@FindBy(");
@@ -216,7 +250,6 @@ public class ChosenNode {
 			sb.append(getLastName());
 			sb.append(".sendKeys(newValue);\r\n}\r\n\r\n");
 		}
-
 		return sb.toString();
 	}
 

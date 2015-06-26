@@ -1,5 +1,10 @@
 package com.epam.autopocreator.pageobject;
 
+/**
+ * Одиночка для счетчика
+ * @author Maxim_Mytaryov
+ *
+ */
 public class Counter {
 	private static Counter INSTANCE;
 	private int number;

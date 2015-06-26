@@ -13,10 +13,12 @@ import com.epam.autopocreator.settings.SavePath;
 
 public class Page {
 	private String name;
+	// Пустой файл Page Object
 	private final String BLANK_FILE = "package com.autopocreator.pageobject;\r\n"
 			+ "import ru.yandex.qatools.htmlelements.element.*;\r\n"
 			+ "import org.openqa.selenium.support.FindBy;\r\n"
-			+ "public class %sPage {\r\n\r\n"
+			+ "public class %sPage {\r\n"
+			+ "\r\n"
 			+ "}";
 	
 	public Page(String URL) {
@@ -31,10 +33,19 @@ public class Page {
 		return name.equals(obj.getName());
 	}
 	
+	/**
+	 * Проверяет, существует ли в выбранном каталоге данная страница
+	 * @return
+	 */
 	public boolean isExists() {
 		return (new File(SavePath.getSavePath().getPath() + "\\" + getName() + ".java")).exists();
 	}
 	
+	/**
+	 * Дописывает элемент на страницу
+	 * @param node
+	 * @return
+	 */
 	public boolean addWebElement(ChosenNode node) {
 		if (!this.isExists()) {
 			create();
@@ -42,6 +53,9 @@ public class Page {
 		return writeElement(node);
 	}
 	
+	/**
+	 * Создает новый файл-заготовку
+	 */
 	private void create() {
 		try {
 			OutputStream os = new FileOutputStream(SavePath.getSavePath().getPath() + "\\" + getName() + ".java");
@@ -54,6 +68,11 @@ public class Page {
 		}
 	}
 	
+	/**
+	 * Дописывает в конец файла элемент
+	 * @param node
+	 * @return
+	 */
 	private boolean writeElement(ChosenNode node) {
 		if (!checkSameElement(node)) {
 			try {
@@ -76,6 +95,11 @@ public class Page {
 		return false;
 	}
 	
+	/**
+	 * Проверяет, есть ли в файле страницы данный элемент
+	 * @param node
+	 * @return
+	 */
 	public boolean checkSameElement(ChosenNode node) {
 		File file = new File(SavePath.getSavePath().getPath() + "\\" + getName() + ".java");
 		boolean found = false;
@@ -87,6 +111,13 @@ public class Page {
 		return found;
 	}
 	
+	/**
+	 * Поиск слов в файле, нужен для проверки повторов
+	 * @param file
+	 * @param searchWord
+	 * @return
+	 * @throws IOException
+	 */
 	private boolean searchWordInFile(File file, String searchWord) throws IOException {
 	        FileInputStream fis = new FileInputStream(file); 
 	        byte[] content = new byte[fis.available()];
